@@ -1,10 +1,9 @@
 package com.raizesdonordeste.domain.enums;
 
 public enum StatusPedido {
-    AGUARDANDO_PAGAMENTO,
-    PAGAMENTO_RECUSADO,
-    PAGO,
-    EM_PREPARO,
+
+    RECEBIDO,
+    EM_PREPARACAO,
     PRONTO,
     ENTREGUE,
     CANCELADO

@@ -1,0 +1,57 @@
+package com.raizesdonordeste.application.service;
+
+import org.springframework.stereotype.Service;
+
+import com.raizesdonordeste.api.dto.pagamento.PagamentoRequest;
+import com.raizesdonordeste.api.dto.pagamento.PagamentoResponse;
+import com.raizesdonordeste.domain.entity.Pagamento;
+import com.raizesdonordeste.domain.entity.Pedido;
+import com.raizesdonordeste.domain.enums.StatusPagamento;
+import com.raizesdonordeste.infrastructure.repository.PagamentoRepository;
+import com.raizesdonordeste.infrastructure.repository.PedidoRepository;
+
+@Service
+public class PagamentoService {
+
+    private final PagamentoRepository pagamentoRepository;
+    private final PedidoRepository pedidoRepository;
+
+    public PagamentoService(
+            PagamentoRepository pagamentoRepository,
+            PedidoRepository pedidoRepository) {
+
+        this.pagamentoRepository = pagamentoRepository;
+        this.pedidoRepository = pedidoRepository;
+    }
+
+    public PagamentoResponse processar(
+            Long pedidoId,
+            PagamentoRequest request) {
+
+        Pedido pedido = pedidoRepository.findById(pedidoId)
+                .orElseThrow(() ->
+                        new RuntimeException("Pedido não encontrado"));
+
+        Pagamento pagamento = Pagamento.builder()
+                .pedido(pedido)
+                .build();
+
+        if (Boolean.TRUE.equals(request.getAprovado())) {
+            pagamento.setStatus(StatusPagamento.APROVADO);
+        } else {
+            pagamento.setStatus(StatusPagamento.RECUSADO);
+        }
+
+        pagamento = pagamentoRepository.save(pagamento);
+
+        PagamentoResponse response =
+                new PagamentoResponse();
+
+        response.setId(pagamento.getId());
+        response.setPedidoId(pedido.getId());
+        response.setStatus(
+                pagamento.getStatus().name());
+
+        return response;
+    }
+}
