@@ -15,13 +15,16 @@ public class PagamentoService {
 
     private final PagamentoRepository pagamentoRepository;
     private final PedidoRepository pedidoRepository;
+    private final FidelidadeService fidelidadeService;
 
     public PagamentoService(
             PagamentoRepository pagamentoRepository,
-            PedidoRepository pedidoRepository) {
+            PedidoRepository pedidoRepository,
+            FidelidadeService fidelidadeService) {
 
         this.pagamentoRepository = pagamentoRepository;
         this.pedidoRepository = pedidoRepository;
+        this.fidelidadeService = fidelidadeService;
     }
 
     public PagamentoResponse processar(
@@ -37,8 +40,18 @@ public class PagamentoService {
                 .build();
 
         if (Boolean.TRUE.equals(request.getAprovado())) {
+
             pagamento.setStatus(StatusPagamento.APROVADO);
+
+            Integer pontos =
+                    pedido.getValorTotal().intValue();
+
+            fidelidadeService.adicionarPontos(
+                    pedido.getUsuario().getId(),
+                    pontos);
+
         } else {
+
             pagamento.setStatus(StatusPagamento.RECUSADO);
         }
 
