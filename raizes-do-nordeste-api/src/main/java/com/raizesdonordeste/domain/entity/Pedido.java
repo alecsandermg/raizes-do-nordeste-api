@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.raizesdonordeste.domain.enums.StatusPedido;
+import com.raizesdonordeste.domain.enums.CanalPedido;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -53,4 +54,8 @@ public class Pedido {
     public void preUpdate() {
         this.dataAtualizacao = LocalDateTime.now();
     }
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CanalPedido canalPedido;
 }

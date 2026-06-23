@@ -10,6 +10,7 @@ import com.raizesdonordeste.domain.entity.Usuario;
 import com.raizesdonordeste.domain.enums.Role;
 import com.raizesdonordeste.infrastructure.repository.UsuarioRepository;
 import com.raizesdonordeste.infrastructure.security.JwtService;
+import com.raizesdonordeste.application.service.AuditService;
 
 
 @Service
@@ -21,18 +22,31 @@ public class AuthService {
             new BCryptPasswordEncoder();
     
     private final JwtService jwtService;
+    private final AuditService auditService;
 
-    public AuthService(UsuarioRepository usuarioRepository, JwtService JwtService, JwtService jwtService) {
+    public AuthService(UsuarioRepository usuarioRepository, JwtService JwtService, JwtService jwtService, AuditService auditService) {
         this.usuarioRepository = usuarioRepository;
         this.jwtService = jwtService;
+        this.auditService = auditService;
     }
     
     public AuthResponse login(LoginRequest request) {
 
         Usuario usuario = usuarioRepository
                 .findByEmail(request.getEmail())
-                .orElseThrow(() ->
-                        new RuntimeException("Usuário não encontrado"));
+                .orElseThrow();
+                
+        if (usuario == null) {
+
+            auditService.registrar(
+                    "LOGIN",
+                    "USUARIO_NAO_ENCONTRADO",
+                    request.getEmail());
+
+            throw new RuntimeException(
+                    "Usuário não encontrado");
+                }
+                        
 
         boolean senhaValida =
                 passwordEncoder.matches(
@@ -40,11 +54,25 @@ public class AuthService {
                         usuario.getSenhaHash());
 
         if (!senhaValida) {
+        	
+            auditService.registrar(
+                    "LOGIN",
+                    "FALHA",
+                    usuario.getEmail());
+            
             throw new RuntimeException("Senha inválida");
+            
         }
 
         String token =
-                jwtService.generateToken(usuario.getEmail());
+                jwtService.generateToken(
+                        usuario.getEmail(),
+                        usuario.getRole().name());
+        
+        auditService.registrar(
+                "LOGIN",
+                "SUCESSO",
+                usuario.getEmail());
 
         return new AuthResponse(token);
     }

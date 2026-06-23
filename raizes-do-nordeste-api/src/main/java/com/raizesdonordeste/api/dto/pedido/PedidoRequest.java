@@ -7,6 +7,7 @@ public class PedidoRequest {
     private Long usuarioId;
     private Long unidadeId;
     private List<ItemPedidoRequest> itens;
+    private String canalPedido;
 
     public Long getUsuarioId() {
         return usuarioId;
@@ -30,5 +31,8 @@ public class PedidoRequest {
 
     public void setItens(List<ItemPedidoRequest> itens) {
         this.itens = itens;
+    }
+    public String getCanalPedido() {
+        return canalPedido;
     }
 }

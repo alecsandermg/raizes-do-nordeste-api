@@ -9,6 +9,7 @@ public class PedidoResponse {
     private String status;
     private BigDecimal valorTotal;
     private List<ItemPedidoResponse> itens;
+    private String canalPedido;
 
     public Long getId() {
         return id;
@@ -16,6 +17,13 @@ public class PedidoResponse {
 
     public void setId(Long id) {
         this.id = id;
+    }
+    public String getCanalPedido() {
+        return canalPedido;
+    }
+
+    public void setCanalPedido(String canalPedido) {
+        this.canalPedido = canalPedido;
     }
 
     public String getStatus() {

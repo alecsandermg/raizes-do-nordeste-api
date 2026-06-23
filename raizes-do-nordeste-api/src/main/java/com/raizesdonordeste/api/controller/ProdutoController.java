@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import com.raizesdonordeste.api.dto.produto.ProdutoRequest;
 import com.raizesdonordeste.api.dto.produto.ProdutoResponse;
 import com.raizesdonordeste.application.service.ProdutoService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
+
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/produtos")
 public class ProdutoController {

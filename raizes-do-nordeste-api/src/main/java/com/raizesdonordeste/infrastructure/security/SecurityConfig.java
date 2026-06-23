@@ -25,26 +25,29 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/auth/login",
-                    "/auth/register",
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/auth/login",
-                    "/auth/register",
-                    "/produtos/**",
-                    "/cardapios/**",
-                    "/unidades/**",
-                    "/estoques/**",
-                    "/pedidos/**",
-                    "/pagamentos/**",
-                    "/pagamentos/**",
-                    "/fidelidade/**",
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated())
+
+            	    .requestMatchers(
+            	        "/auth/login",
+            	        "/auth/register",
+            	        "/swagger-ui/**",
+            	        "/v3/api-docs/**")
+            	    .permitAll()
+
+            	    .requestMatchers(
+            	        "/produtos/**",
+            	        "/unidades/**",
+            	        "/estoques/**",
+            	        "/cardapios/**")
+            	    .hasRole("ADMIN")
+
+            	    .requestMatchers(
+            	        "/pedidos/**",
+            	        "/pagamentos/**",
+            	        "/fidelidade/**")
+            	    .hasAnyRole("ADMIN", "CLIENTE")
+
+            	    .anyRequest()
+            	    .authenticated())
             .addFilterBefore(
                 jwtFilter,
                 UsernamePasswordAuthenticationFilter.class);

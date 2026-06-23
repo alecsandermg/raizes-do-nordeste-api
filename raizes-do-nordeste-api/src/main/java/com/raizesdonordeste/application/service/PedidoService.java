@@ -23,6 +23,7 @@ import com.raizesdonordeste.infrastructure.repository.PedidoRepository;
 import com.raizesdonordeste.infrastructure.repository.ProdutoRepository;
 import com.raizesdonordeste.infrastructure.repository.UnidadeRepository;
 import com.raizesdonordeste.infrastructure.repository.UsuarioRepository;
+import com.raizesdonordeste.domain.enums.CanalPedido;
 
 @Service
 public class PedidoService {
@@ -66,6 +67,9 @@ public class PedidoService {
         Pedido pedido = Pedido.builder()
                 .usuario(usuario)
                 .unidade(unidade)
+                .canalPedido(
+                    CanalPedido.valueOf(
+                        request.getCanalPedido().toUpperCase()))
                 .valorTotal(BigDecimal.ZERO)
                 .build();
 
@@ -155,6 +159,9 @@ public class PedidoService {
                 pedido.getStatus().name());
         response.setValorTotal(valorTotal);
         response.setItens(itensResponse);
+        
+        response.setCanalPedido(
+                pedido.getCanalPedido().name());
 
         return response;
     }
