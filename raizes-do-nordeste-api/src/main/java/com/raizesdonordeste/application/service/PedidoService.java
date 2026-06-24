@@ -24,6 +24,8 @@ import com.raizesdonordeste.infrastructure.repository.ProdutoRepository;
 import com.raizesdonordeste.infrastructure.repository.UnidadeRepository;
 import com.raizesdonordeste.infrastructure.repository.UsuarioRepository;
 import com.raizesdonordeste.domain.enums.CanalPedido;
+import com.raizesdonordeste.api.dto.pedido.PedidoStatusRequest;
+import com.raizesdonordeste.domain.enums.StatusPedido;
 
 @Service
 public class PedidoService {
@@ -34,6 +36,7 @@ public class PedidoService {
     private final UnidadeRepository unidadeRepository;
     private final ProdutoRepository produtoRepository;
     private final EstoqueRepository estoqueRepository;
+    private final AuditService auditService;
 
     public PedidoService(
             PedidoRepository pedidoRepository,
@@ -41,7 +44,8 @@ public class PedidoService {
             UsuarioRepository usuarioRepository,
             UnidadeRepository unidadeRepository,
             ProdutoRepository produtoRepository,
-            EstoqueRepository estoqueRepository) {
+            EstoqueRepository estoqueRepository,
+            AuditService auditService) {
 
         this.pedidoRepository = pedidoRepository;
         this.itemPedidoRepository = itemPedidoRepository;
@@ -49,6 +53,7 @@ public class PedidoService {
         this.unidadeRepository = unidadeRepository;
         this.produtoRepository = produtoRepository;
         this.estoqueRepository = estoqueRepository;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -160,6 +165,114 @@ public class PedidoService {
         response.setValorTotal(valorTotal);
         response.setItens(itensResponse);
         
+        response.setCanalPedido(
+                pedido.getCanalPedido().name());
+        
+        
+
+        return response;
+    }
+    @Transactional
+    public PedidoResponse alterarStatus(
+            Long pedidoId,
+            PedidoStatusRequest request) {
+
+        Pedido pedido = pedidoRepository.findById(pedidoId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Pedido não encontrado"));
+
+        StatusPedido novoStatus =
+                StatusPedido.valueOf(
+                        request.getStatus().toUpperCase());
+
+        StatusPedido statusAtual =
+                pedido.getStatus();
+
+        if (statusAtual == StatusPedido.ENTREGUE ||
+                statusAtual == StatusPedido.CANCELADO) {
+
+            throw new RuntimeException(
+                    "Pedido finalizado não pode ser alterado");
+        }
+
+        pedido.setStatus(novoStatus);
+
+        pedidoRepository.save(pedido);
+
+        auditService.registrar(
+                "PEDIDO",
+                "STATUS_" + novoStatus.name(),
+                pedido.getUsuario().getEmail());
+
+        PedidoResponse response =
+                new PedidoResponse();
+
+        response.setId(pedido.getId());
+        response.setStatus(
+                pedido.getStatus().name());
+        response.setValorTotal(
+                pedido.getValorTotal());
+        response.setCanalPedido(
+                pedido.getCanalPedido().name());
+
+        return response;
+    }
+    @Transactional
+    public PedidoResponse cancelar(
+            Long pedidoId) {
+
+        Pedido pedido = pedidoRepository.findById(pedidoId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Pedido não encontrado"));
+
+        if (pedido.getStatus() != StatusPedido.RECEBIDO
+                && pedido.getStatus() != StatusPedido.EM_PREPARACAO) {
+
+            throw new RuntimeException(
+                    "Pedido não pode mais ser cancelado");
+        }
+        
+        List<ItemPedido> itens =
+                itemPedidoRepository.findByPedidoId(
+                        pedido.getId());
+
+        for (ItemPedido item : itens) {
+
+            Estoque estoque =
+                    estoqueRepository
+                    .findByUnidadeIdAndProdutoId(
+                            pedido.getUnidade().getId(),
+                            item.getProduto().getId())
+                    .orElseThrow(() ->
+                            new RuntimeException(
+                                    "Estoque não encontrado"));
+
+            estoque.setQuantidade(
+                    estoque.getQuantidade()
+                    + item.getQuantidade());
+
+            estoqueRepository.save(estoque);
+        }
+        
+        pedido.setStatus(StatusPedido.CANCELADO);
+
+        pedidoRepository.save(pedido);
+
+        auditService.registrar(
+                "PEDIDO",
+                "CANCELADO",
+                pedido.getUsuario().getEmail());
+
+        PedidoResponse response =
+                new PedidoResponse();
+
+        response.setId(pedido.getId());
+        response.setStatus(
+                pedido.getStatus().name());
+        response.setValorTotal(
+                pedido.getValorTotal());
         response.setCanalPedido(
                 pedido.getCanalPedido().name());
 

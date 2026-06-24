@@ -94,4 +94,48 @@ public class FidelidadeService {
 
         return response;
     }
+    
+    public FidelidadeResponse resgatar(
+            Long usuarioId,
+            Integer pontos) {
+
+        FidelidadeCliente fidelidade =
+                fidelidadeRepository
+                .findByUsuarioId(usuarioId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Cliente sem fidelidade"));
+
+        if (fidelidade.getSaldoPontos() < pontos) {
+
+            throw new RuntimeException(
+                    "Saldo insuficiente");
+        }
+
+        fidelidade.setSaldoPontos(
+                fidelidade.getSaldoPontos()
+                - pontos);
+
+        fidelidadeRepository.save(
+                fidelidade);
+
+        MovimentacaoPontos mov =
+                MovimentacaoPontos.builder()
+                .fidelidadeCliente(fidelidade)
+                .quantidade(pontos)
+                .tipo(
+                        TipoMovimentacaoPontos.DEBITO)
+                .build();
+
+        movimentacaoRepository.save(mov);
+
+        FidelidadeResponse response =
+                new FidelidadeResponse();
+
+        response.setUsuarioId(usuarioId);
+        response.setSaldoPontos(
+                fidelidade.getSaldoPontos());
+
+        return response;
+    }
 }

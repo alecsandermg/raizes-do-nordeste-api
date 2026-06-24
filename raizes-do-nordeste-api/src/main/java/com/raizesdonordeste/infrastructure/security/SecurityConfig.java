@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
+
 
 @Configuration
 public class SecurityConfig {
@@ -39,12 +41,22 @@ public class SecurityConfig {
             	        "/estoques/**",
             	        "/cardapios/**")
             	    .hasRole("ADMIN")
+            	    
+            	    .requestMatchers(
+            	    	    HttpMethod.PATCH,
+            	    	    "/pedidos/*/status")
+            	    	.hasRole("ADMIN")
 
             	    .requestMatchers(
             	        "/pedidos/**",
             	        "/pagamentos/**",
             	        "/fidelidade/**")
             	    .hasAnyRole("ADMIN", "CLIENTE")
+            	    
+            	    .requestMatchers(
+            	    	    HttpMethod.PATCH,
+            	    	    "/pedidos/*/cancelar")
+            	    	.hasAnyRole("ADMIN", "CLIENTE")
 
             	    .anyRequest()
             	    .authenticated())
