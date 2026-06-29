@@ -278,4 +278,41 @@ public class PedidoService {
 
         return response;
     }
+    @Transactional(readOnly = true)
+    public List<PedidoResponse> listarPorUsuario(String email) {
+
+        List<Pedido> pedidos = pedidoRepository.findByUsuarioEmail(email);
+
+        return pedidos.stream().map(pedido -> {
+
+            PedidoResponse response = new PedidoResponse();
+
+            response.setId(pedido.getId());
+            response.setStatus(pedido.getStatus().name());
+            response.setValorTotal(pedido.getValorTotal());
+            response.setCanalPedido(pedido.getCanalPedido().name());
+
+            List<ItemPedidoResponse> itens =
+                    itemPedidoRepository.findByPedidoId(pedido.getId())
+                    .stream()
+                    .map(item -> {
+
+                        ItemPedidoResponse itemResponse =
+                                new ItemPedidoResponse();
+
+                        itemResponse.setProdutoId(item.getProduto().getId());
+                        itemResponse.setProdutoNome(item.getProduto().getNome());
+                        itemResponse.setQuantidade(item.getQuantidade());
+                        itemResponse.setPrecoUnitario(item.getPrecoUnitario());
+
+                        return itemResponse;
+
+                    }).toList();
+
+            response.setItens(itens);
+
+            return response;
+
+        }).toList();
+    }
 }

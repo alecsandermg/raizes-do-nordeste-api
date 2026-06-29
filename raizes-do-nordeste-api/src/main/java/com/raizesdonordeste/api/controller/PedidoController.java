@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.raizesdonordeste.api.dto.pedido.PedidoStatusRequest;
+import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @RestController
 @RequestMapping("/pedidos")
@@ -44,5 +49,12 @@ public class PedidoController {
             @PathVariable Long id) {
 
         return pedidoService.cancelar(id);
+    }
+    @GetMapping
+    public ResponseEntity<List<PedidoResponse>> listar(
+            Authentication authentication) {
+
+        return ResponseEntity.ok(
+                pedidoService.listarPorUsuario(authentication.getName()));
     }
 }

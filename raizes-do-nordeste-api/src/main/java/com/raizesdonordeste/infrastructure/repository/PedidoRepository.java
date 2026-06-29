@@ -11,4 +11,5 @@ public interface PedidoRepository
 	
 	List<Pedido> findByUsuarioId(Long usuarioId);
 	Optional<Pedido> findById(Long id);
+	List<Pedido> findByUsuarioEmail(String email);
 }
