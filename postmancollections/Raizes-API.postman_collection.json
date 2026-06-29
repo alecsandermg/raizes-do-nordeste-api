@@ -1,0 +1,652 @@
+{
+  "info": {
+    "_postman_id": "c4f810e4-5f34-48bd-a942-0b7c16a67ce5",
+    "name": "Raizes-API",
+    "description": "## Raizes-API\n\nEsta coleção cobre os fluxos principais da API da aplicação **Raizes**, rodando localmente em `http://localhost:8080`. Ela reúne os endpoints essenciais para autenticar usuários e gerenciar pedidos de ponta a ponta.\n\n### O que está incluído\n\n| Requisição | Método | Descrição |\n|---|---|---|\n| **Login** | POST | Autentica um usuário e retorna um token de acesso via `/auth/login`. |\n| **ErroDeLogin** | GET | Representa um cenário de falha no login, útil para testar o tratamento de erros no fluxo de autenticação. |\n| **FazerPedido** | POST | Cria um novo pedido enviando os dados para `/pedidos`. |\n| **ConsultarPedidos** | GET | Retorna a lista de pedidos existentes. |\n| **Pagamento** | POST | Processa o pagamento de um pedido. |\n\n### Fluxo sugerido\n\n1. **Login** — obtenha as credenciais/token.\n2. **FazerPedido** — realize um novo pedido.\n3. **ConsultarPedidos** — verifique se o pedido foi criado.\n4. **Pagamento** — conclua o pagamento do pedido.\n\nUtilize **ErroDeLogin** para validar que a API retorna as respostas de erro corretas para credenciais inválidas.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40144222",
+    "_collection_link": "https://go.postman.co/collection/40144222-c4f810e4-5f34-48bd-a942-0b7c16a67ce5?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "packages": {},
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"joao@email.com\",\r\n  \"senha\": \"123456\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Login",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"joao@email.com\",\r\n  \"senha\": \"123456\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "Text",
+          "header": [
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "X-XSS-Protection",
+              "value": "0"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, max-age=0, must-revalidate"
+            },
+            {
+              "key": "Pragma",
+              "value": "no-cache"
+            },
+            {
+              "key": "Expires",
+              "value": "0"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Date",
+              "value": "Mon, 29 Jun 2026 14:48:17 GMT"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=60"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"token\": \"{{json_web_token}}\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "FazerPedido",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authorization_secret}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{json_web_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"usuarioId\": 1,\r\n  \"unidadeId\": 1,\r\n  \"itens\": [\r\n    {\r\n      \"produtoId\": 1,\r\n      \"quantidade\": 1\r\n    }\r\n  ],\r\n  \"canalPedido\": \"TOTEM\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/pedidos",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "pedidos"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Pedido",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{json_web_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"usuarioId\": 1,\r\n  \"unidadeId\": 1,\r\n  \"itens\": [\r\n    {\r\n      \"produtoId\": 1,\r\n      \"quantidade\": 1\r\n    }\r\n  ],\r\n  \"canalPedido\": \"TOTEM\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/pedidos",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "pedidos"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "Text",
+          "header": [
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "X-XSS-Protection",
+              "value": "0"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, max-age=0, must-revalidate"
+            },
+            {
+              "key": "Pragma",
+              "value": "no-cache"
+            },
+            {
+              "key": "Expires",
+              "value": "0"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Date",
+              "value": "Mon, 29 Jun 2026 15:08:36 GMT"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=60"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"id\": 20,\n    \"status\": \"RECEBIDO\",\n    \"valorTotal\": 15.9,\n    \"itens\": [\n        {\n            \"produtoId\": 1,\n            \"produtoNome\": \"Cuscuz Completo\",\n            \"quantidade\": 1,\n            \"precoUnitario\": 15.9\n        }\n    ],\n    \"canalPedido\": \"TOTEM\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "ConsultarPedidos",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{json_web_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/pedidos",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "pedidos"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "ConsultarPedidos",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{json_web_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/pedidos",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "pedidos"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "Text",
+          "header": [
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "X-XSS-Protection",
+              "value": "0"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, max-age=0, must-revalidate"
+            },
+            {
+              "key": "Pragma",
+              "value": "no-cache"
+            },
+            {
+              "key": "Expires",
+              "value": "0"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Date",
+              "value": "Mon, 29 Jun 2026 15:51:03 GMT"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=60"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            }
+          ],
+          "cookie": [],
+          "body": "[\n    {\n        \"id\": 5,\n        \"status\": \"RECEBIDO\",\n        \"valorTotal\": 31.8,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 2,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"APP\"\n    },\n    {\n        \"id\": 6,\n        \"status\": \"RECEBIDO\",\n        \"valorTotal\": 15.9,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 1,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"APP\"\n    },\n    {\n        \"id\": 9,\n        \"status\": \"RECEBIDO\",\n        \"valorTotal\": 47.7,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 3,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"APP\"\n    },\n    {\n        \"id\": 10,\n        \"status\": \"RECEBIDO\",\n        \"valorTotal\": 111.3,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 7,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"APP\"\n    },\n    {\n        \"id\": 11,\n        \"status\": \"ENTREGUE\",\n        \"valorTotal\": 15.9,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 1,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"TOTEM\"\n    },\n    {\n        \"id\": 8,\n        \"status\": \"EM_PREPARACAO\",\n        \"valorTotal\": 47.7,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 3,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"APP\"\n    },\n    {\n        \"id\": 15,\n        \"status\": \"CANCELADO\",\n        \"valorTotal\": 15.9,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 1,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"WEB\"\n    },\n    {\n        \"id\": 16,\n        \"status\": \"CANCELADO\",\n        \"valorTotal\": 15.9,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 1,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"APP\"\n    },\n    {\n        \"id\": 17,\n        \"status\": \"CANCELADO\",\n        \"valorTotal\": 15.9,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 1,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"APP\"\n    },\n    {\n        \"id\": 18,\n        \"status\": \"CANCELADO\",\n        \"valorTotal\": 31.8,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 2,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"TOTEM\"\n    },\n    {\n        \"id\": 19,\n        \"status\": \"RECEBIDO\",\n        \"valorTotal\": 15.9,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 1,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"TOTEM\"\n    },\n    {\n        \"id\": 20,\n        \"status\": \"RECEBIDO\",\n        \"valorTotal\": 15.9,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 1,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"TOTEM\"\n    },\n    {\n        \"id\": 21,\n        \"status\": \"RECEBIDO\",\n        \"valorTotal\": 31.8,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 2,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"TOTEM\"\n    },\n    {\n        \"id\": 22,\n        \"status\": \"RECEBIDO\",\n        \"valorTotal\": 31.8,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 2,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"TOTEM\"\n    },\n    {\n        \"id\": 23,\n        \"status\": \"RECEBIDO\",\n        \"valorTotal\": 31.8,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 2,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"TOTEM\"\n    },\n    {\n        \"id\": 24,\n        \"status\": \"RECEBIDO\",\n        \"valorTotal\": 31.8,\n        \"itens\": [\n            {\n                \"produtoId\": 1,\n                \"produtoNome\": \"Cuscuz Completo\",\n                \"quantidade\": 2,\n                \"precoUnitario\": 15.9\n            }\n        ],\n        \"canalPedido\": \"TOTEM\"\n    }\n]"
+        }
+      ]
+    },
+    {
+      "name": "Pagamento",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authorization_secret}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{json_web_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"aprovado\": true\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/pagamentos/24",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "pagamentos",
+            "24"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Pagamento",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{json_web_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"aprovado\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/pagamentos/24",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "pagamentos",
+                "24"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "Text",
+          "header": [
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "X-XSS-Protection",
+              "value": "0"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, max-age=0, must-revalidate"
+            },
+            {
+              "key": "Pragma",
+              "value": "no-cache"
+            },
+            {
+              "key": "Expires",
+              "value": "0"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Date",
+              "value": "Mon, 29 Jun 2026 15:54:39 GMT"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=60"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"id\": 17,\n    \"pedidoId\": 24,\n    \"status\": \"APROVADO\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "ErroDeLogin",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"joao@email.com\",\r\n  \"senha\": \"senhaerrada\"\r\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "ErroDeLogin",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"joao@email.com\",\r\n  \"senha\": \"senhaerrada\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8080/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "status": "Forbidden",
+          "code": 403,
+          "_postman_previewlanguage": "Text",
+          "header": [
+            {
+              "key": "Accept",
+              "value": "application/json, application/yaml, application/*+json"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "X-XSS-Protection",
+              "value": "0"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, max-age=0, must-revalidate"
+            },
+            {
+              "key": "Pragma",
+              "value": "no-cache"
+            },
+            {
+              "key": "Expires",
+              "value": "0"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            },
+            {
+              "key": "Content-Length",
+              "value": "0"
+            },
+            {
+              "key": "Date",
+              "value": "Mon, 29 Jun 2026 15:55:43 GMT"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=60"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            }
+          ],
+          "cookie": [],
+          "body": null
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "json_web_token",
+      "value": ""
+    }
+  ]
+}
